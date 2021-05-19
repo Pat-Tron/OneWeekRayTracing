@@ -1,57 +1,42 @@
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #include "Vector3.h"
 #include "Ray.h"
 #include "Sphere.h"
+#include "Camera.h"
 
 #include "Colors.h"
 
 Color backgroudColor(const Ray &r);
-Color colorCalculator(const Ray &r, HitRecord &rec, const Sphere &s);
+Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &s);
+
+Camera cam(2000, 1000);
+//Camera cam(100, 100);
 
 int main()
 {
-    // Right hand coordinate: x: right, y: up, z: back
-    // image resolution
-    int rx{ 20 };
-    int ry{ 20 };
-    // Place camara(eye) at the origin.
-    Vec camaraPosition(0, 0, 0);
-
-    double focal{ 100 };
-    Vec imageCenter{ camaraPosition + Vec(0, 0, -focal) };
-    
-    double imageHeight{ 100 };
-    double imageWidth{ static_cast<double>(rx) / static_cast<double>(ry) * imageHeight };
-    Vec lowerLeftCorner{ imageCenter - Vec(imageWidth / 2, imageHeight / 2, 0) };
-    double pixelHeight{ imageHeight / ry };
-    double pixelWidth{ imageWidth / rx };
-
-
-
+    cam.antialiasingFlag = true;
+    cam.antialiasingPrecision = 100;
 
     // Volumes
-    Sphere ball_1(imageCenter - Vec(0, 0, 20), 40.0, red);
-
-
+    Sphere ball_1(cam.imageCenter - Vec(0, 0, 100), 70.0, red);
 
 
 
     // Write image data.
     std::ofstream out;
     out.open("../../test.ppm");
-    out << "P3\n" << rx << " " << ry << "\n255\n";
-    HitRecord tmpRecord;
+    out << "P3\n" << cam.rx << " " << cam.ry << "\n255\n";
 
-    for (int j{ ry - 1 }; j >= 0; j--)
+
+    HitRecord tmpRecord;
+    for (int j{ cam.ry - 1 }; j >= 0; j--)
     {
-        for (int i{ 0 }; i < rx; i++)
+        for (int i{ 0 }; i < cam.rx; i++)
         {
-            double u{ i * pixelWidth };
-            double v{ j * pixelHeight };
-            Ray r(camaraPosition, lowerLeftCorner + Vec(u, v, 0));
-            out << colorCalculator(r, tmpRecord, ball_1) << std::endl;
+            out << colorCalculator(i, j, tmpRecord, ball_1) << std::endl;
         }
         std::cout << j << '\n';
     }
@@ -67,8 +52,47 @@ Color backgroudColor(const Ray &r)
     return (1.0 - t) * purple + t * blue;
 }
 
-Color colorCalculator(const Ray &r, HitRecord &rec, const Sphere &s)
+Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &s)
 {
-    if (s.hit(r, rec)) return (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
-    else return backgroudColor(r);
+    if (cam.antialiasingFlag)
+    {
+        Vector3 tmp(0.0, 0.0, 0.0);  // temperary color
+        // Random double between [0, 1)
+        //static std::uniform_real_distribution<double> distribution(-0.1, 0.1);
+        //static std::default_random_engine engine;
+
+        //for (int a{ 0 }; a < cam.antialiasingPrecision; a++)
+        //{
+        //    const Ray &&r{ cam.getRay(i + distribution(engine), j + distribution(engine)) };
+        //    if (s.hit(r, rec)) tmp += (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
+        //    else tmp += backgroudColor(r);
+        //}
+        // return tmp / cam.antialiasingPrecision;
+
+        const int precision1{ 4 };
+        const double precision2{ 10.0 };
+        const double precision3{ ((precision1 * 2) + 1) * ((precision1 * 2) + 1) };
+
+        for (int x{ -precision1 }; x <= precision1; x++)
+        {
+            for (int y{ -precision1 }; y <= precision1; y++)
+            {
+                const Ray &&r{ cam.getRay(i + x / precision2, j + y / precision2) };
+                if (s.hit(r, rec)) tmp += (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
+                else tmp += backgroudColor(r);
+            }
+        }
+        return tmp / precision3;
+        
+
+    } else
+    {
+        const Ray &&r{ cam.getRay(i, j) };
+        if (s.hit(r, rec)) return (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
+        else return backgroudColor(r);
+    }
+    
+
+
+
 }

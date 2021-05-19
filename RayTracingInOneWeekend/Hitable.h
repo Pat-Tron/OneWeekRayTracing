@@ -1,5 +1,6 @@
 #pragma once
 #include "Ray.h"
+#include <memory>
 
 struct HitRecord
 {
@@ -14,17 +15,18 @@ class Hitable
 protected:
     virtual bool recordArchiving(const double &t, HitRecord &rec, const Ray &r) const = 0;
 public:
-    virtual bool hit(const Ray &r, HitRecord &rec, const double &t_min = 1.0, const double &t_max = 10000.0) const = 0;
+    //static HitRecord rec;
+    virtual bool hit(const Ray &r, HitRecord &rec, const double &t_min, const double &t_max) const = 0;
 };
 
 class HitableList : public Hitable
 {
 public:
-    std::vector<Hitable*> list;
+    std::vector<std::shared_ptr<Hitable>> list;
 
     HitableList() = default;
-    HitableList(std::vector<Hitable*> l) : list(l) {}
+    HitableList(std::vector<std::shared_ptr<Hitable>> l) : list(l) {}
 
-    bool hit(const Ray &r, HitRecord &rec, const double &t_min = 1.0, const double &t_max = 10000.0) const override;
+    bool hit(const Ray &r, HitRecord &rec, const double &t_min = 0.0, const double &t_max = 10000.0) const override;
 };
 

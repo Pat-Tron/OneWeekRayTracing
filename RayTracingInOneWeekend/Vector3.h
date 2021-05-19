@@ -61,7 +61,6 @@ public:
     friend Vector3 operator*(const double &t, const Vector3 &rv);
     friend Vector3 operator/(const Vector3 &lv, const double &t);
     
-
     friend std::istream &operator>>(std::istream &is, Vector3 &t);
 };
 

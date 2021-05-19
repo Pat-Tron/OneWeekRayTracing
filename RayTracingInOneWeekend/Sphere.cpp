@@ -9,15 +9,15 @@ bool Sphere::hit(const Ray &r, HitRecord &rec, const double &t_min, const double
     // t*t*dot(D,D) + 2*t*dot(D,O-C) + dot(O-C,O-C)-R*R=0
     Vec oc{ r.origin - center };
     double a{ dot(r.direction, r.direction) };
-    double b{ dot(oc, r.direction) };
+    double b{ 2.0 * dot(oc, r.direction) };
     double c{ dot(oc, oc) - radius * radius };
-    double discriminant{ b * b - a * c };
+    double discriminant{ b * b - 4.0 * a * c };
 
     if (discriminant >= 0)
     {
-        double root{ (-b - sqrt(discriminant)) / a };
+        double root{ (-b - sqrt(discriminant)) / (a * 2.0) };
         if (root < t_max && root > t_min) return recordArchiving(root, rec, r);
-        root = (-b + sqrt(discriminant)) / a;
+        root = (-b + sqrt(discriminant)) / (a * 2.0);
         if (root < t_max && root > t_min) return recordArchiving(root, rec, r);
         return false;
     }
