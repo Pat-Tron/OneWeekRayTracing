@@ -12,12 +12,12 @@
 Color backgroudColor(const Ray &r);
 Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &s);
 
-Camera cam(2000, 1000);
-//Camera cam(100, 100);
+//Camera cam(2000, 1000);
+Camera cam(100, 100);
 
 int main()
 {
-    cam.antialiasingFlag = true;
+    //cam.antialiasingFlag = true;
     cam.antialiasingPrecision = 100;
 
     // Volumes
@@ -27,7 +27,7 @@ int main()
 
     // Write image data.
     std::ofstream out;
-    out.open("../../test.ppm");
+    out.open("./ppm/test.ppm");
     out << "P3\n" << cam.rx << " " << cam.ry << "\n255\n";
 
 
