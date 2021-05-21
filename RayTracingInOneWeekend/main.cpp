@@ -10,10 +10,10 @@
 #include "Colors.h"
 
 Color backgroudColor(const Ray &r);
-Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &s);
+Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Hitable &h);
 
 //Camera cam(2000, 1000);
-Camera cam(100, 100);
+Camera cam(200, 100);
 
 int main()
 {
@@ -21,7 +21,11 @@ int main()
     cam.antialiasingPrecision = 100;
 
     // Volumes
-    Sphere ball_1(cam.imageCenter - Vec(0, 0, 100), 70.0, red);
+    HitableList Spheres{ std::vector<std::shared_ptr<Hitable>>
+    {
+        std::make_shared<Sphere>(cam.imageCenter + Vec(0, 0, -100), 70.0, red),
+        std::make_shared<Sphere>(cam.imageCenter + Vec(0, -2070, -100), 2000.0, red)
+    }};
 
 
 
@@ -36,7 +40,7 @@ int main()
     {
         for (int i{ 0 }; i < cam.rx; i++)
         {
-            out << colorCalculator(i, j, tmpRecord, ball_1) << std::endl;
+            out << colorCalculator(i, j, tmpRecord, Spheres) << std::endl;
         }
         std::cout << j << '\n';
     }
@@ -52,7 +56,7 @@ Color backgroudColor(const Ray &r)
     return (1.0 - t) * purple + t * blue;
 }
 
-Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &s)
+Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Hitable &h)
 {
     if (cam.antialiasingFlag)
     {
@@ -78,7 +82,7 @@ Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &
             for (int y{ -precision1 }; y <= precision1; y++)
             {
                 const Ray &&r{ cam.getRay(i + x / precision2, j + y / precision2) };
-                if (s.hit(r, rec)) tmp += (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
+                if (h.hit(r, rec)) tmp += (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
                 else tmp += backgroudColor(r);
             }
         }
@@ -88,7 +92,7 @@ Color colorCalculator(const int &i, const int &j, HitRecord &rec, const Sphere &
     } else
     {
         const Ray &&r{ cam.getRay(i, j) };
-        if (s.hit(r, rec)) return (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
+        if (h.hit(r, rec)) return (rec.normal + Vec(1.0, 1.0, 1.0)) / 2.0;
         else return backgroudColor(r);
     }
     
