@@ -122,8 +122,8 @@ public:
         elements[2] /= rv.b();
         return *this;
     }
-    Color operator*(const Color &rv) { return Color({ r() * rv.r(), g() * rv.g() , b() * rv.b() }); }
-    Color operator/(const Color &rv) { return Color({ r() / rv.r(), g() / rv.g() , b() / rv.b() }); }
+    //Color operator*(const Color &rv) { return Color({ r() * rv.r(), g() * rv.g() , b() * rv.b() }); }
+    //Color operator/(const Color &rv) { return Color({ r() / rv.r(), g() / rv.g() , b() / rv.b() }); }
 
     friend std::ostream &operator<<(std::ostream &os, const Color &t);
 
