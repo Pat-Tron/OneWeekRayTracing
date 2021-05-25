@@ -1,6 +1,7 @@
 #pragma once
-#include "Ray.h"
 #include <memory>
+#include "Ray.h"
+#include "Material.h"
 
 struct HitRecord
 {
@@ -8,6 +9,7 @@ struct HitRecord
     double t;
     Vec p;  // point
     Vec normal;  // normal vector of this point
+    Material *materialPtr;
 };
 
 class Hitable

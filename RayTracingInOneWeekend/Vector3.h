@@ -122,8 +122,13 @@ public:
         elements[2] /= rv.b();
         return *this;
     }
-    //Color operator*(const Color &rv) { return Color({ r() * rv.r(), g() * rv.g() , b() * rv.b() }); }
-    //Color operator/(const Color &rv) { return Color({ r() / rv.r(), g() / rv.g() , b() / rv.b() }); }
+    Color &sqrt()
+    {
+        elements[0] = std::sqrt(elements[0]);
+        elements[1] = std::sqrt(elements[1]);
+        elements[2] = std::sqrt(elements[2]);
+        return *this;
+    }
 
     friend std::ostream &operator<<(std::ostream &os, const Color &t);
 
